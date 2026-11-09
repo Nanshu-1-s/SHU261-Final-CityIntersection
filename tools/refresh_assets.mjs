@@ -16,6 +16,7 @@ const TARGETS = [
   [`${MIX}\\SFX_Horns_Random`, `${EXP}/Random/SFX_EbikeHorn_03.wav`, 'SFX_EbikeHorn_03'],
   [`${MIX}\\SFX_Horns_Random`, `${EXP}/Random/SFX_CarHorn_01.wav`, 'SFX_CarHorn_01'],
   [`${MIX}\\SFX_Horns_Random`, `${EXP}/Random/SFX_CarHorn_02.wav`, 'SFX_CarHorn_02'],
+  [`${MIX}\\SFX_Horns_Random`, `${EXP}/Random/SFX_CarHorn_03.wav`, 'SFX_CarHorn_03'],
   [`${MIX}\\SFX_Rain_Random`, `${EXP}/Random/SFX_RainOnCanopy_01.wav`, 'SFX_RainOnCanopy_01'],
   [`${MIX}\\SFX_Rain_Random`, `${EXP}/Random/SFX_RainOnCanopy_02.wav`, 'SFX_RainOnCanopy_02'],
   [`${MIX}\\SFX_Rain_Random`, `${EXP}/Random/SFX_PuddleStep_01.wav`, 'SFX_PuddleStep_01'],
@@ -25,10 +26,14 @@ const TARGETS = [
 const c = new WaapiClient();
 
 const listSources = async (soundPath) => {
-  const r = await c.call('ak.wwise.core.object.get',
-    { from: { path: [soundPath] }, transform: [{ select: ['children'] }] },
-    { return: ['name', 'type', 'path'] });
-  return r.return ?? [];
+  try {
+    const r = await c.call('ak.wwise.core.object.get',
+      { from: { path: [soundPath] }, transform: [{ select: ['children'] }] },
+      { return: ['name', 'type', 'path'] });
+    return r.return ?? [];
+  } catch {
+    return []; // 路径不存在
+  }
 };
 
 try {
@@ -38,6 +43,20 @@ try {
     const soundPath = soundName ? `${parent}\\${soundName}` : parent;
     const srcPath = `${soundPath}\\${base}`;
     try {
+      // 新素材（Sound 尚不存在）先建出来
+      const exists = await listSources(soundPath).then((k) => k.length > 0);
+      if (!exists) {
+        const r = await c.call('ak.wwise.core.audio.import', {
+          importOperation: 'createNew',
+          imports: [{ audioFile: wav, objectPath: soundPath, objectType: 'Sound' }],
+        });
+        const err0 = (r.log ?? []).find((l) => l.severity === 'Error');
+        if (err0) throw new Error(err0.message);
+        console.log(`+ 新建 ${soundPath.split('\\').pop()}`);
+        ok++;
+        continue;
+      }
+
       const r = await c.call('ak.wwise.core.audio.import', {
         importOperation: 'useExisting',
         imports: [{ audioFile: wav, objectPath: srcPath, objectType: 'AudioFileSource' }],

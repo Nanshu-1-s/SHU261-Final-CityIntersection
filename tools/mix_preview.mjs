@@ -132,7 +132,7 @@ place(P('SFX_EbikeHorn_03.wav'), 49.6, { gainDb: -4, pan: 0.5 });
 // 汽车喇叭：中距离，情绪性强
 place(P('SFX_CarHorn_01.wav'), 11.2, { gainDb: -6, pan: -0.2, lp: 9000 });
 place(P('SFX_CarHorn_02.wav'), 30.6, { gainDb: -9, pan: 0.35, lp: 7000 });
-place(P('SFX_CarHorn_01.wav'), 47.0, { gainDb: -12, pan: 0.1, lp: 5000 });
+place(P('SFX_CarHorn_03.wav'), 47.0, { gainDb: -12, pan: 0.1, lp: 5000 });
 
 // 雨点打伞 / 踩水：贴近听者的细节
 place(P('SFX_RainOnCanopy_01.wav'), 6.4, { gainDb: -7, pan: -0.25 });

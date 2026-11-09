@@ -18,3 +18,4 @@ desktop.ini
 # ---- 临时 ----
 *.log
 *.tmp
+_library_cache/
