@@ -93,7 +93,7 @@ Positioning：`3D Position = Emitter`，`EnableAttenuation = true`，引用 Shar
 
 ### 关于雨的响度
 
-基底里的雨层刻意压在事件声之下（基底 RMS −26 dBFS，事件峰值 −3.5 ~ −9 dBFS）。如果觉得雨还是偏大或偏小，改 `tools/gen_assets.mjs` 顶部的：
+基底里的雨层刻意压在事件声之下（基底 RMS −28 dBFS，事件峰值 −3.5 ~ −9 dBFS，相差 19–25 dB）。如果觉得雨还是偏大或偏小，改 `tools/gen_assets.mjs` 顶部的：
 
 ```js
 const RAIN_GAIN_DB = 0;   // 雨大改 -3，雨不够改 +2

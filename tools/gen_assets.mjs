@@ -323,7 +323,8 @@ function writeWav24(path, [l, r], { dither = true } = {}) {
 /* 素材 1：十字路口基底环境声（60s 无缝循环）                            */
 /* ================================================================== */
 // 小雨版：高频量比无雨版低，但由颗粒化水珠构成，听感是"细雨"而不是"噪声墙"
-const BED_TARGET = [-54, -52, -52, -54, -64, -68, -78];
+// 目标是"安静的城市小雨"：信息密度低、层数少，事件声一响就跳出来
+const BED_TARGET = [-56, -54, -55, -59, -66, -73, -82];
 
 // 雨层总增益（dB）。觉得雨大就调小，比如 -3；觉得雨不够就调 +2
 const RAIN_GAIN_DB = 0;
@@ -362,42 +363,40 @@ function buildCityBed(seconds = 60, xfade = 3) {
     const crowd = bandpass(pinkNoise(n, rnd), 1600, 0.8);
 
     // ── 雨层 ──
-    // ① 细雨沙沙：密集极短颗粒，只放在 4 kHz 以上
-    const sizzle = bandpass(rainGrains(n, rnd, { ratePerSec: 1500, tauMsMin: 1.2, tauMsMax: 3.0, amp: 0.5 }), 4200, 0.9);
-    const sizzleHi = highpass(sizzle, 6000, 0.7);
-    // ② 可辨识的水珠：稀疏、稍长、落在 2.5–6 kHz
-    const drops = bandpass(rainGrains(n, rnd, { ratePerSec: 38, tauMsMin: 5, tauMsMax: 13, amp: 1.9 }), 3200, 1.1);
-    // ③ 雨幕底：极轻的连续层，把颗粒"粘"成雨幕
-    const veil = bandpass(pinkNoise(n, rnd), 6200, 0.7);
-    // ④ 湿路面：雨中轮胎的黏滞感，只在 700–1500 Hz
+    // ① 细雨沙沙：颗粒率降到 700/s，避免"密度过载"的噪声墙感
+    const sizzle = bandpass(rainGrains(n, rnd, { ratePerSec: 700, tauMsMin: 1.4, tauMsMax: 3.4, amp: 0.42 }), 4400, 1.0);
+    const sizzleHi = highpass(sizzle, 6200, 0.7);
+    // ② 可辨识的水珠：更稀疏，一次能听出"单颗"
+    const drops = bandpass(rainGrains(n, rnd, { ratePerSec: 20, tauMsMin: 5, tauMsMax: 14, amp: 1.5 }), 3400, 1.2);
+    // ③ 雨幕底：极轻的连续层，只负责把颗粒"粘"起来
+    const veil = bandpass(pinkNoise(n, rnd), 6400, 0.7);
+    // ④ 湿路面：雨中轮胎的黏滞感，只在 700–1500 Hz，压到很轻
     const wetRoad = bandpass(pinkNoise(n, rnd), 1050, 1.2);
 
     const hum = new Float64Array(n);
     for (let i = 0; i < n; i++) {
       const t = i / FS;
       hum[i] = Math.sin(2 * Math.PI * 50 * t) * 0.6
-             + Math.sin(2 * Math.PI * 150 * t) * 0.18
-             + Math.sin(2 * Math.PI * 250 * t) * 0.07;
+             + Math.sin(2 * Math.PI * 100 * t) * 0.10;
     }
 
     return (t, i) => {
-      const breath = 1 + 0.18 * Math.sin(2 * Math.PI * (1 / 9) * t + 0.7)
-                       + 0.10 * Math.sin(2 * Math.PI * (1 / 17) * t + 2.1);
-      const flow = 0.55 + 0.30 * Math.sin(2 * Math.PI * (1 / 23) * t + 1.3)
-                        + 0.15 * Math.sin(2 * Math.PI * (1 / 7) * t + 3.4);
-      const crowdLvl = Math.max(0, 0.45 + 0.4 * Math.sin(2 * Math.PI * (1 / 31) * t)
-                                   + 0.15 * Math.sin(2 * Math.PI * (1 / 5.3) * t + 1.1));
-      // 雨的强度起伏：小雨时大时小，周期 40–90 s，幅度 ±3 dB
-      const rainGust = 1 + 0.28 * Math.sin(2 * Math.PI * (1 / 67) * t + 1.2)
-                         + 0.12 * Math.sin(2 * Math.PI * (1 / 13) * t + 0.4);
+      // 起伏全部收窄：原来 ±18% 的呼吸感会让背景显"忙"
+      const breath = 1 + 0.09 * Math.sin(2 * Math.PI * (1 / 9) * t + 0.7)
+                       + 0.05 * Math.sin(2 * Math.PI * (1 / 17) * t + 2.1);
+      const flow = 0.72 + 0.16 * Math.sin(2 * Math.PI * (1 / 23) * t + 1.3)
+                        + 0.07 * Math.sin(2 * Math.PI * (1 / 7) * t + 3.4);
+      const crowdLvl = Math.max(0, 0.5 + 0.22 * Math.sin(2 * Math.PI * (1 / 31) * t));
+      // 雨的强度起伏：小雨时大时小，周期 67 s，幅度收窄到 ±1.5 dB
+      const rainGust = 1 + 0.15 * Math.sin(2 * Math.PI * (1 / 67) * t + 1.2);
 
-      const city = (rumble[i] * 0.55 + subRumble[i] * 1.1) * breath
-                 + traffic[i] * flow * 2.0
-                 + crowd[i] * crowdLvl * 1.0
-                 + wetRoad[i] * flow * 0.55
-                 + hum[i] * 0.010;
+      const city = (rumble[i] * 0.50 + subRumble[i] * 1.0) * breath
+                 + traffic[i] * flow * 1.30
+                 + crowd[i] * crowdLvl * 0.40
+                 + wetRoad[i] * flow * 0.26
+                 + hum[i] * 0.004;
 
-      const rain = (sizzle[i] * 1.0 + sizzleHi[i] * 0.55 + drops[i] * 0.9 + veil[i] * 0.10) * rainGust;
+      const rain = (sizzle[i] * 1.0 + sizzleHi[i] * 0.28 + drops[i] * 1.0 + veil[i] * 0.055) * rainGust;
 
       return city + rain * RAIN_GAIN;
     };
@@ -439,7 +438,7 @@ function buildCityBed(seconds = 60, xfade = 3) {
   }
 
   let st = [outL, outR];
-  st = normalizeRms(st, -26);
+  st = normalizeRms(st, -28);
   if (Math.max(peakOf(st[0]), peakOf(st[1])) > dbToGain(-9)) st = normalizePeak(st, -9);
   return { st, cal };
 }

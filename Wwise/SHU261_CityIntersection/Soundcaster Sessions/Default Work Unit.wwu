@@ -6,7 +6,7 @@
 				<SoundcasterSession Name="CityIntersection_Preview" ID="{7F3C1A62-9B4E-4D2A-8C31-5E6FA2B0D917}">
 					<ModuleList>
 						<Module>
-							<ObjectRef Name="AMB_RainCityIntersection_Bed" ID="{3AE2EBAC-A3E0-4D8C-89CF-67CE43FBC020}" WorkUnitID="{B05E9AC8-2F06-4D7D-83C9-12150F286395}"/>
+							<ObjectRef Name="AMB_RainCityIntersection_Bed" ID="{86FD9064-8198-4095-BBA4-340B09878449}" WorkUnitID="{B05E9AC8-2F06-4D7D-83C9-12150F286395}"/>
 							<Position X="96" Y="48"/>
 						</Module>
 						<Module>
