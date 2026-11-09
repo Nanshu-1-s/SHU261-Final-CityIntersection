@@ -363,7 +363,7 @@ function writeWav24(path, [l, r], { dither = true } = {}) {
 /* ================================================================== */
 // 小雨版：高频量比无雨版低，但由颗粒化水珠构成，听感是"细雨"而不是"噪声墙"
 // 目标是"安静的城市小雨"：信息密度低、层数少，事件声一响就跳出来
-const BED_TARGET = [-56, -54, -55, -59, -66, -73, -82];
+const BED_TARGET = [-60, -60, -64, -64, -67, -70, -80];
 
 // 雨层总增益（dB）。觉得雨大就调小，比如 -3；觉得雨不够就调 +2
 const RAIN_GAIN_DB = 0;
@@ -398,15 +398,16 @@ function buildCityBed(seconds = 60, xfade = 3) {
     // ── 城市层 ──
     const rumble = lowpass(brownNoise(n, rnd), 130, 0.8);
     const subRumble = lowpass(brownNoise(n, rnd), 55, 0.9);
-    const traffic = bandpass(pinkNoise(n, rnd), 700, 0.5);
+    // 车流带通上移到 850 Hz 并收窄，避免 300–600 Hz 的"风"感
+    const traffic = bandpass(pinkNoise(n, rnd), 850, 0.65);
     const crowd = bandpass(pinkNoise(n, rnd), 1600, 0.8);
 
     // ── 雨层 ──
-    // ① 细雨沙沙：颗粒率 700/s，避免"密度过载"的噪声墙感
-    const sizzle = bandpass(rainGrains(n, rnd, { ratePerSec: 700, tauMsMin: 1.4, tauMsMax: 3.4, amp: 0.42 }), 4400, 1.0);
+    // ① 细雨沙沙：颗粒率 700/s，压得比之前轻
+    const sizzle = bandpass(rainGrains(n, rnd, { ratePerSec: 700, tauMsMin: 1.4, tauMsMax: 3.4, amp: 0.34 }), 4400, 1.0);
     const sizzleHi = highpass(sizzle, 6200, 0.7);
-    // ② 可辨识的水珠：稀疏，一次能听出"单颗"
-    const drops = bandpass(rainGrains(n, rnd, { ratePerSec: 20, tauMsMin: 5, tauMsMax: 14, amp: 1.5 }), 3400, 1.2);
+    // ② 可辨识的水珠：加密到 45/s、上移到 4.2 kHz，让"雨"靠颗粒被认出来而不是靠噪声量
+    const drops = bandpass(rainGrains(n, rnd, { ratePerSec: 45, tauMsMin: 3, tauMsMax: 9, amp: 1.7 }), 4200, 1.3);
 
     return (t, i) => {
       // 起伏收窄：避免背景显"忙"
@@ -419,9 +420,9 @@ function buildCityBed(seconds = 60, xfade = 3) {
       const rainGust = 1 + 0.15 * Math.sin(2 * Math.PI * (1 / 67) * t + 1.2);
 
       // 只剩三层：低频隆隆 + 车流 + 远处人声（雨幕底、湿路面、电网嗡鸣已删除）
-      const city = (rumble[i] * 0.50 + subRumble[i] * 1.0) * breath
-                 + traffic[i] * flow * 1.30
-                 + crowd[i] * crowdLvl * 0.40;
+      const city = (rumble[i] * 0.32 + subRumble[i] * 0.65) * breath
+                 + traffic[i] * flow * 0.95
+                 + crowd[i] * crowdLvl * 0.30;
 
       const rain = (sizzle[i] * 1.0 + sizzleHi[i] * 0.28 + drops[i] * 1.0) * rainGust;
 
@@ -448,7 +449,7 @@ function buildCityBed(seconds = 60, xfade = 3) {
   // 频谱校准 → 清晰度处理 → 低频居中 → 立体声展开 → 直流阻断
   let chans = [dcBlock(L), dcBlock(R)];
   const cal = correctSpectrum(chans, BED_TARGET);
-  chans = chans.map((c) => clarityEQ(c, { hp: 30, mud: 300, mudDb: -2.5, carve: 2200, carveDb: -2.0, lp: 13500 }));
+  chans = chans.map((c) => clarityEQ(c, { hp: 30, mud: 300, mudDb: -2.5, carve: 2200, carveDb: -1.5, lp: 13500 }));
   chans = monoBelow(chans, 150, 0.7);
   chans = chans.map((c) => dcBlock(c));
 
