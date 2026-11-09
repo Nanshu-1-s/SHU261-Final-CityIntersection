@@ -322,89 +322,96 @@ function writeWav24(path, [l, r], { dither = true } = {}) {
 /* ================================================================== */
 /* 素材 1：十字路口基底环境声（60s 无缝循环）                            */
 /* ================================================================== */
-const BED_TARGET = [-54, -52, -53, -56, -62, -70, -80];
+// 小雨版：高频量比无雨版低，但由颗粒化水珠构成，听感是"细雨"而不是"噪声墙"
+const BED_TARGET = [-54, -52, -52, -54, -64, -68, -78];
+
+// 雨层总增益（dB）。觉得雨大就调小，比如 -3；觉得雨不够就调 +2
+const RAIN_GAIN_DB = 0;
+const RAIN_GAIN = Math.pow(10, RAIN_GAIN_DB / 20);
+
+/* 稀疏水珠：泊松分布的短促颗粒，是"小雨沙沙"的核心 —— 粒度感来自密度，不是音量 */
+function rainGrains(n, rnd, { ratePerSec, tauMsMin, tauMsMax, amp = 1 }) {
+  const out = new Float64Array(n);
+  const dur = n / FS;
+  const nextGap = () => -Math.log(1 - rnd() * 0.999999) / ratePerSec;
+  let t = nextGap();
+  while (t < dur) {
+    const start = Math.floor(t * FS);
+    const tau = ((tauMsMin + rnd() * (tauMsMax - tauMsMin)) / 1000) * FS;
+    const len = Math.min(Math.ceil(tau * 5), n - start);
+    const a = amp * (0.3 + 0.7 * rnd());
+    for (let i = 0; i < len; i++) {
+      out[start + i] += (rnd() * 2 - 1) * Math.exp(-i / tau) * a;
+    }
+    t += nextGap();
+  }
+  return out;
+}
 
 function buildCityBed(seconds = 60, xfade = 3) {
   const total = seconds + xfade;
   const n = Math.round(total * FS);
-  const rnd = mulberry32(20261109);
 
-  // ① 低频城市隆隆
-  const rumble = lowpass(brownNoise(n, rnd), 130, 0.8);
-  const subRumble = lowpass(brownNoise(n, rnd), 55, 0.9);
+  const build = (seedBase) => {
+    const rnd = mulberry32(seedBase);
 
-  // ② 中频车流
-  const traffic = bandpass(pinkNoise(n, rnd), 700, 0.5);
+    // ── 城市层 ──
+    const rumble = lowpass(brownNoise(n, rnd), 130, 0.8);
+    const subRumble = lowpass(brownNoise(n, rnd), 55, 0.9);
+    const traffic = bandpass(pinkNoise(n, rnd), 700, 0.5);
+    const crowd = bandpass(pinkNoise(n, rnd), 1600, 0.8);
 
-  // ③ 轮胎/路面宽带嘶声（街道的高频主体）
-  const tire = applyBiquad(whiteNoise(n, rnd), biquadCoeffs('bandpass', 2600, 0.45));
+    // ── 雨层 ──
+    // ① 细雨沙沙：密集极短颗粒，只放在 4 kHz 以上
+    const sizzle = bandpass(rainGrains(n, rnd, { ratePerSec: 1500, tauMsMin: 1.2, tauMsMax: 3.0, amp: 0.5 }), 4200, 0.9);
+    const sizzleHi = highpass(sizzle, 6000, 0.7);
+    // ② 可辨识的水珠：稀疏、稍长、落在 2.5–6 kHz
+    const drops = bandpass(rainGrains(n, rnd, { ratePerSec: 38, tauMsMin: 5, tauMsMax: 13, amp: 1.9 }), 3200, 1.1);
+    // ③ 雨幕底：极轻的连续层，把颗粒"粘"成雨幕
+    const veil = bandpass(pinkNoise(n, rnd), 6200, 0.7);
+    // ④ 湿路面：雨中轮胎的黏滞感，只在 700–1500 Hz
+    const wetRoad = bandpass(pinkNoise(n, rnd), 1050, 1.2);
 
-  // ④ 远处人声轰鸣
-  const crowd = bandpass(pinkNoise(n, rnd), 1600, 0.8);
+    const hum = new Float64Array(n);
+    for (let i = 0; i < n; i++) {
+      const t = i / FS;
+      hum[i] = Math.sin(2 * Math.PI * 50 * t) * 0.6
+             + Math.sin(2 * Math.PI * 150 * t) * 0.18
+             + Math.sin(2 * Math.PI * 250 * t) * 0.07;
+    }
 
-  // ⑤ 空气底噪
-  const air = highpass(whiteNoise(n, rnd), 6000, 0.7);
+    return (t, i) => {
+      const breath = 1 + 0.18 * Math.sin(2 * Math.PI * (1 / 9) * t + 0.7)
+                       + 0.10 * Math.sin(2 * Math.PI * (1 / 17) * t + 2.1);
+      const flow = 0.55 + 0.30 * Math.sin(2 * Math.PI * (1 / 23) * t + 1.3)
+                        + 0.15 * Math.sin(2 * Math.PI * (1 / 7) * t + 3.4);
+      const crowdLvl = Math.max(0, 0.45 + 0.4 * Math.sin(2 * Math.PI * (1 / 31) * t)
+                                   + 0.15 * Math.sin(2 * Math.PI * (1 / 5.3) * t + 1.1));
+      // 雨的强度起伏：小雨时大时小，周期 40–90 s，幅度 ±3 dB
+      const rainGust = 1 + 0.28 * Math.sin(2 * Math.PI * (1 / 67) * t + 1.2)
+                         + 0.12 * Math.sin(2 * Math.PI * (1 / 13) * t + 0.4);
 
-  // ⑥ 50Hz 电网嗡鸣
-  const hum = new Float64Array(n);
-  for (let i = 0; i < n; i++) {
-    const t = i / FS;
-    hum[i] = Math.sin(2 * Math.PI * 50 * t) * 0.6
-           + Math.sin(2 * Math.PI * 150 * t) * 0.18
-           + Math.sin(2 * Math.PI * 250 * t) * 0.07;
-  }
+      const city = (rumble[i] * 0.55 + subRumble[i] * 1.1) * breath
+                 + traffic[i] * flow * 2.0
+                 + crowd[i] * crowdLvl * 1.0
+                 + wetRoad[i] * flow * 0.55
+                 + hum[i] * 0.010;
 
-  const mix = (arr, breathFn) => {
-    const out = new Float64Array(n);
-    for (let i = 0; i < n; i++) out[i] = arr[i] * breathFn(i / FS);
-    return out;
+      const rain = (sizzle[i] * 1.0 + sizzleHi[i] * 0.55 + drops[i] * 0.9 + veil[i] * 0.10) * rainGust;
+
+      return city + rain * RAIN_GAIN;
+    };
   };
+
+  const synthL = build(20261109);
+  const synthR = build(77123);
 
   const L = new Float64Array(n);
   const R = new Float64Array(n);
-
-  const breathA = (t) => 1 + 0.18 * Math.sin(2 * Math.PI * (1 / 9) * t + 0.7)
-                         + 0.10 * Math.sin(2 * Math.PI * (1 / 17) * t + 2.1);
-  const breathB = (t) => 1 + 0.16 * Math.sin(2 * Math.PI * (1 / 11) * t + 1.9);
-  const flowA = (t) => 0.55 + 0.30 * Math.sin(2 * Math.PI * (1 / 23) * t + 1.3)
-                          + 0.15 * Math.sin(2 * Math.PI * (1 / 7) * t + 3.4);
-  const flowB = (t) => 0.55 + 0.30 * Math.sin(2 * Math.PI * (1 / 19) * t + 0.4)
-                          + 0.15 * Math.sin(2 * Math.PI * (1 / 8.5) * t + 2.7);
-  const crowdA = (t) => Math.max(0, 0.45 + 0.4 * Math.sin(2 * Math.PI * (1 / 31) * t)
-                                    + 0.15 * Math.sin(2 * Math.PI * (1 / 5.3) * t + 1.1));
-  const crowdB = (t) => Math.max(0, 0.45 + 0.4 * Math.sin(2 * Math.PI * (1 / 27) * t + 1.9));
-
   for (let i = 0; i < n; i++) {
     const t = i / FS;
-    const lowMid = (rumble[i] * 0.55 + subRumble[i] * 1.1) * breathA(t);
-    const tireA = tire[i] * (0.85 + 0.15 * Math.sin(2 * Math.PI * (1 / 13) * t));
-    L[i] = lowMid
-         + traffic[i] * flowA(t) * 2.4
-         + tireA * 0.55
-         + crowd[i] * crowdA(t) * 0.9
-         + air[i] * 0.16
-         + hum[i] * 0.010;
-  }
-
-  // 右声道用独立噪声源重建同类纹理，避免完全单声道
-  const rndR = mulberry32(77123);
-  const rumbleR = lowpass(brownNoise(n, rndR), 130, 0.8);
-  const subRumbleR = lowpass(brownNoise(n, rndR), 55, 0.9);
-  const trafficR = bandpass(pinkNoise(n, rndR), 740, 0.5);
-  const tireR = applyBiquad(whiteNoise(n, rndR), biquadCoeffs('bandpass', 2500, 0.45));
-  const crowdR = bandpass(pinkNoise(n, rndR), 1550, 0.8);
-  const airR = highpass(whiteNoise(n, rndR), 6200, 0.7);
-
-  for (let i = 0; i < n; i++) {
-    const t = i / FS;
-    const lowMid = (rumbleR[i] * 0.55 + subRumbleR[i] * 1.1) * breathB(t);
-    const tireB = tireR[i] * (0.85 + 0.15 * Math.sin(2 * Math.PI * (1 / 12) * t + 0.9));
-    R[i] = lowMid
-         + trafficR[i] * flowB(t) * 2.4
-         + tireB * 0.55
-         + crowdR[i] * crowdB(t) * 0.9
-         + airR[i] * 0.16
-         + hum[i] * 0.010;
+    L[i] = synthL(t, i);
+    R[i] = synthR(t, i);
   }
 
   // 频谱校准 → 直流阻断
@@ -432,7 +439,7 @@ function buildCityBed(seconds = 60, xfade = 3) {
   }
 
   let st = [outL, outR];
-  st = normalizeRms(st, -23);
+  st = normalizeRms(st, -26);
   if (Math.max(peakOf(st[0]), peakOf(st[1])) > dbToGain(-9)) st = normalizePeak(st, -9);
   return { st, cal };
 }
@@ -600,15 +607,95 @@ function buildCarHorn(seed, { double = true } = {}) {
 }
 
 /* ================================================================== */
+/* 素材 5：雨点打在伞面 / 雨棚上                                        */
+/* ================================================================== */
+function buildRainOnCanopy(seed, { duration = 2.6, density = 1 } = {}) {
+  const rnd = mulberry32(seed);
+  const n = Math.round(duration * FS);
+
+  // 紧绷布面的闷响：颗粒经高 Q 带通，落在 800–1600 Hz
+  const patter = rainGrains(n, rnd, { ratePerSec: 260 * density, tauMsMin: 2, tauMsMax: 6, amp: 1.0 });
+  const fabric = bandpass(patter, 1050, 2.2);
+  const fabricHi = bandpass(patter, 3200, 1.4);
+
+  // 偶尔的"大水滴"：低频敲击感
+  const bigDrops = rainGrains(n, rnd, { ratePerSec: 9, tauMsMin: 10, tauMsMax: 22, amp: 1.6 });
+  const thump = lowpass(bigDrops, 420, 1.0);
+
+  const mono = new Float64Array(n);
+  for (let i = 0; i < n; i++) {
+    const t = i / FS;
+    const lull = 0.75 + 0.25 * Math.sin(2 * Math.PI * 0.7 * t + 0.6);
+    mono[i] = (fabric[i] * 1.0 + fabricHi[i] * 0.45) * lull + thump[i] * 1.4;
+  }
+
+  // 头尾淡入淡出
+  const fi = 0.06, fo = 0.35;
+  applyGainInPlace(mono, (t) => {
+    let g = 1;
+    if (t < fi) g *= smoothstep(t / fi);
+    if (t > duration - fo) g *= smoothstep((duration - t) / fo);
+    return g;
+  });
+
+  let st = panToStereo(dcBlock(mono), (t) => 0.15 * Math.sin(2 * Math.PI * 0.23 * t) - 0.05);
+  st = normalizePeak(st, -6);
+  st = softLimit(st, -1.5);
+  return { st };
+}
+
+/* ================================================================== */
+/* 素材 6：踩到水洼                                                     */
+/* ================================================================== */
+function buildPuddleStep(seed) {
+  const rnd = mulberry32(seed);
+  const duration = 0.85;
+  const n = Math.round(duration * FS);
+  const out = new Float64Array(n);
+
+  // 鞋底撞击：低频短促
+  for (let i = 0; i < Math.round(0.09 * FS); i++) {
+    const t = i / FS;
+    out[i] += Math.sin(2 * Math.PI * (118 - 40 * t) * t) * Math.exp(-t / 0.022) * 0.55;
+  }
+
+  // 水花：
+  const splashStart = Math.round(0.008 * FS);
+  const splashLen = Math.round(0.20 * FS);
+  const splash = highpass(whiteNoise(splashLen, rnd), 1500, 0.7);
+  for (let i = 0; i < splashLen; i++) {
+    const t = i / FS;
+    out[splashStart + i] += splash[i] * Math.exp(-t / 0.045) * 0.9;
+  }
+
+  // 飞溅的二次水珠
+  const drops = rainGrains(Math.round(0.45 * FS), rnd, { ratePerSec: 120, tauMsMin: 2, tauMsMax: 6, amp: 0.5 });
+  const dropsBp = bandpass(drops, 3800, 1.2);
+  for (let i = 0; i < dropsBp.length; i++) {
+    const j = splashStart + Math.round(0.05 * FS) + i;
+    if (j < n) out[j] += dropsBp[i] * 0.9;
+  }
+
+  applyGainInPlace(out, (t) => (t < 0.004 ? smoothstep(t / 0.004) : 1));
+  const cut = Math.round(0.62 * FS);
+  let st = panToStereo(dcBlock(out), () => (seed % 2 === 0 ? -0.25 : 0.3));
+  st = [st[0].subarray(0, cut), st[1].subarray(0, cut)];
+  st = trimTail(st, 0.05);
+  st = normalizePeak(st, -4);
+  st = softLimit(st, -1.5);
+  return { st };
+}
+
+/* ================================================================== */
 /* 主流程                                                              */
 /* ================================================================== */
 const fmt = (b) => (b / 1048576).toFixed(1) + ' MB';
 const lvl = ([l, r]) =>
   `RMS ${gainToDb(Math.sqrt((rmsOf(l) ** 2 + rmsOf(r) ** 2) / 2)).toFixed(1)} / peak ${gainToDb(Math.max(peakOf(l), peakOf(r))).toFixed(1)} dBFS`;
 
-console.log('▶ 基底环境声 AMB_CityIntersection_Bed_Loop.wav');
+console.log(`▶ 基底环境声 AMB_RainCityIntersection_Bed_Loop.wav（小雨路口，雨层 ${RAIN_GAIN_DB >= 0 ? '+' : ''}${RAIN_GAIN_DB} dB）`);
 const bed = buildCityBed(60, 3);
-const bedBytes = writeWav24(join(OUT_BED, 'AMB_CityIntersection_Bed_Loop.wav'), bed.st);
+const bedBytes = writeWav24(join(OUT_BED, 'AMB_RainCityIntersection_Bed_Loop.wav'), bed.st);
 console.log(`  ✓ 60.00s · ${fmt(bedBytes)} · ${lvl(bed.st)}`);
 console.log(`    频段: ${bed.cal.bands.map((b, i) => `${BANDS[i][0]}-${BANDS[i][1]}Hz:${b.toFixed(1)}`).join(' ')}`);
 
@@ -634,6 +721,20 @@ console.log('▶ 汽车喇叭 SFX_CarHorn_01..02.wav');
   const { st } = buildCarHorn(seed, opt);
   writeWav24(join(OUT_SFX, `SFX_CarHorn_0${i + 1}.wav`), st);
   console.log(`  ✓ SFX_CarHorn_0${i + 1}.wav · ${(st[0].length / FS).toFixed(2)}s · ${lvl(st)}`);
+});
+
+console.log('▶ 雨点打伞 SFX_RainOnCanopy_01..02.wav');
+[[901, { density: 1.0 }], [913, { density: 1.35 }]].forEach(([seed, opt], i) => {
+  const { st } = buildRainOnCanopy(seed, opt);
+  writeWav24(join(OUT_SFX, `SFX_RainOnCanopy_0${i + 1}.wav`), st);
+  console.log(`  ✓ SFX_RainOnCanopy_0${i + 1}.wav · ${(st[0].length / FS).toFixed(2)}s · ${lvl(st)}`);
+});
+
+console.log('▶ 踩水 SFX_PuddleStep_01..02.wav');
+[[921, {}], [933, {}]].forEach(([seed], i) => {
+  const { st } = buildPuddleStep(seed);
+  writeWav24(join(OUT_SFX, `SFX_PuddleStep_0${i + 1}.wav`), st);
+  console.log(`  ✓ SFX_PuddleStep_0${i + 1}.wav · ${(st[0].length / FS).toFixed(2)}s · ${lvl(st)}`);
 });
 
 console.log('完成 → AudioAssets/Exported/{Base,Random}');

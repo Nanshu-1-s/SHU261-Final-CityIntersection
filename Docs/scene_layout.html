@@ -144,32 +144,43 @@
     <text x="800" y="886" fill="#c0559b" font-size="18" text-anchor="middle">④ 汽车喇叭 ×2</text>
   </g>
 
+  <!-- 雨声事件 -->
+  <g>
+    <g transform="translate(1152,698)">
+      <circle r="17" fill="#4fa3d1" opacity="0.92"/>
+      <text y="6" fill="#fff" font-size="15" text-anchor="middle" font-weight="bold">雨</text>
+    </g>
+    <text x="1178" y="704" fill="#4fa3d1" font-size="18">⑤ 雨点打伞 / 踩水 ×4</text>
+  </g>
+
   <!-- 标题 -->
-  <text x="60" y="82" fill="#e8eef6" font-size="34" font-weight="bold">城市十字路口环境声设计 · 场景与声源布局</text>
-  <text x="60" y="118" fill="#9aa8b8" font-size="19">City Intersection — Ambience Design Layout</text>
+  <text x="60" y="82" fill="#e8eef6" font-size="34" font-weight="bold">城市十字路口（小雨）环境声设计 · 场景与声源布局</text>
+  <text x="60" y="118" fill="#9aa8b8" font-size="19">City Intersection in Drizzle — Ambience Design Layout</text>
 
   <!-- 基底说明 -->
   <g>
     <rect x="980" y="60" width="560" height="126" rx="8" fill="#16222b" stroke="#3f6f8f" stroke-width="2"/>
     <text x="1004" y="96" fill="#8fc4e0" font-size="21" font-weight="bold">① 基底持续声 Base Ambience</text>
-    <text x="1004" y="126" fill="#c6d4e2" font-size="17">城市车流 + 街道底噪 + 远处人声 + 50Hz 电网嗡鸣</text>
-    <text x="1004" y="154" fill="#8fa3b5" font-size="16">60s 无缝循环 · Wwise 内无限循环播放 · 关闭距离衰减</text>
+    <text x="1004" y="126" fill="#c6d4e2" font-size="17">小雨水珠 + 城市车流 + 街道底噪 + 远处人声</text>
+    <text x="1004" y="154" fill="#8fa3b5" font-size="16">雨只占 4 kHz 以上，中频留给车流与人声 · 60s 循环</text>
   </g>
 
   <!-- 图例 -->
   <g>
-    <rect x="980" y="742" width="560" height="206" rx="8" fill="#16222b" stroke="#2f3742" stroke-width="2"/>
-    <text x="1004" y="778" fill="#e8eef6" font-size="19" font-weight="bold">图例 Legend</text>
-    <circle cx="1016" cy="806" r="8" fill="#f2b544"/>
-    <text x="1034" y="812" fill="#c6d4e2" font-size="16">听点 / 距离衰减以听点为圆心</text>
-    <circle cx="1016" cy="838" r="8" fill="#e0674f"/>
-    <text x="1034" y="844" fill="#c6d4e2" font-size="16">近距离间断声（电瓶车鸣笛）</text>
-    <circle cx="1016" cy="870" r="8" fill="#c0559b"/>
-    <text x="1034" y="876" fill="#c6d4e2" font-size="16">中距离间断声（汽车喇叭）</text>
-    <line x1="1004" y1="902" x2="1028" y2="902" stroke="#f6c76a" stroke-width="4" marker-end="url(#arrow)"/>
-    <text x="1034" y="908" fill="#c6d4e2" font-size="16">车辆驶过轨迹（含多普勒感）</text>
-    <circle cx="1016" cy="934" r="8" fill="none" stroke="#6ea8c9" stroke-dasharray="4 4"/>
-    <text x="1034" y="940" fill="#8fa3b5" font-size="16">距离环 5 / 15 / 30 / 60 m</text>
+    <rect x="980" y="742" width="560" height="222" rx="8" fill="#16222b" stroke="#2f3742" stroke-width="2"/>
+    <text x="1004" y="774" fill="#e8eef6" font-size="19" font-weight="bold">图例 Legend</text>
+    <circle cx="1016" cy="800" r="8" fill="#f2b544"/>
+    <text x="1034" y="806" fill="#c6d4e2" font-size="16">听点 / 距离衰减以听点为圆心</text>
+    <circle cx="1016" cy="828" r="8" fill="#e0674f"/>
+    <text x="1034" y="834" fill="#c6d4e2" font-size="16">近距离间断声（电瓶车鸣笛）</text>
+    <circle cx="1016" cy="856" r="8" fill="#c0559b"/>
+    <text x="1034" y="862" fill="#c6d4e2" font-size="16">中距离间断声（汽车喇叭）</text>
+    <circle cx="1016" cy="884" r="8" fill="#4fa3d1"/>
+    <text x="1034" y="890" fill="#c6d4e2" font-size="16">雨声事件（打伞 / 踩水）</text>
+    <line x1="1004" y1="908" x2="1028" y2="908" stroke="#f6c76a" stroke-width="4" marker-end="url(#arrow)"/>
+    <text x="1034" y="914" fill="#c6d4e2" font-size="16">车辆驶过轨迹（含多普勒感）</text>
+    <circle cx="1016" cy="938" r="8" fill="none" stroke="#6ea8c9" stroke-dasharray="4 4"/>
+    <text x="1034" y="944" fill="#8fa3b5" font-size="16">距离环 5 / 15 / 30 / 60 m</text>
   </g>
 </svg>
 </body>

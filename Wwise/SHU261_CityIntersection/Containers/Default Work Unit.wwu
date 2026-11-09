@@ -219,7 +219,7 @@
 								</Sound>
 							</ChildrenList>
 						</RandomSequenceContainer>
-						<Sound Name="AMB_CityIntersection_Bed" ID="{3AE2EBAC-A3E0-4D8C-89CF-67CE43FBC020}" ShortID="844351623">
+						<Sound Name="AMB_RainCityIntersection_Bed" ID="{3AE2EBAC-A3E0-4D8C-89CF-67CE43FBC020}" ShortID="844351623">
 							<PropertyList>
 								<Property Name="EnableAttenuation" Type="bool" Value="False"/>
 								<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
@@ -233,18 +233,121 @@
 								</Reference>
 							</ReferenceList>
 							<ChildrenList>
-								<AudioFileSource Name="AMB_CityIntersection_Bed_Loop" ID="{A3E0A229-9AF6-45F4-8CF5-BD8E50FECF4F}">
+								<AudioFileSource Name="AMB_RainCityIntersection_Bed_Loop" ID="{711DF4CB-4401-4D44-B9DD-F246347C5358}">
 									<Language>SFX</Language>
-									<AudioFile>AMB_CityIntersection_Bed_Loop.wav</AudioFile>
+									<AudioFile>AMB_RainCityIntersection_Bed_Loop.wav</AudioFile>
 									<MediaIDList>
-										<MediaID ID="217697441"/>
+										<MediaID ID="592767342"/>
 									</MediaIDList>
 								</AudioFileSource>
 							</ChildrenList>
 							<ActiveSourceList>
-								<ActiveSource Name="AMB_CityIntersection_Bed_Loop" ID="{A3E0A229-9AF6-45F4-8CF5-BD8E50FECF4F}" Platform="Linked"/>
+								<ActiveSource Name="AMB_RainCityIntersection_Bed_Loop" ID="{711DF4CB-4401-4D44-B9DD-F246347C5358}" Platform="Linked"/>
 							</ActiveSourceList>
 						</Sound>
+						<RandomSequenceContainer Name="SFX_Rain_Random" ID="{8B860E12-E33B-4D72-90DB-08B92F5D24D0}" ShortID="545170021">
+							<ReferenceList>
+								<Reference Name="Attenuation">
+									<ObjectRef Name="ATT_CityStreet_Distance" ID="{2C44FDC5-87C2-46EB-A75F-CA4BD7BF54B0}" WorkUnitID="{D1080DC3-7EB3-4E2A-85A8-B3C5CAFCC6CB}"/>
+								</Reference>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1F1A27A1-C9DD-4FF0-81FD-FC7CFBF5A46C}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{041CB286-AEDA-4DCF-A638-F10792558386}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<Sound Name="SFX_RainOnCanopy_01" ID="{4202E167-9AFA-457A-8F5B-404A6F0F31CB}" ShortID="502675298">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1F1A27A1-C9DD-4FF0-81FD-FC7CFBF5A46C}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{041CB286-AEDA-4DCF-A638-F10792558386}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="SFX_RainOnCanopy_01" ID="{7E75157B-02FE-48B3-9ACA-2BE033D46496}">
+											<Language>SFX</Language>
+											<AudioFile>SFX_RainOnCanopy_01.wav</AudioFile>
+											<MediaIDList>
+												<MediaID ID="95269122"/>
+											</MediaIDList>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="SFX_RainOnCanopy_01" ID="{7E75157B-02FE-48B3-9ACA-2BE033D46496}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="SFX_RainOnCanopy_02" ID="{EBF6344A-A8DF-48C1-AFF9-9019C5B52A8D}" ShortID="736820154">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1F1A27A1-C9DD-4FF0-81FD-FC7CFBF5A46C}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{041CB286-AEDA-4DCF-A638-F10792558386}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="SFX_RainOnCanopy_02" ID="{9F56BFCD-4F8B-4194-8C1D-10D834F456A1}">
+											<Language>SFX</Language>
+											<AudioFile>SFX_RainOnCanopy_02.wav</AudioFile>
+											<MediaIDList>
+												<MediaID ID="728575578"/>
+											</MediaIDList>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="SFX_RainOnCanopy_02" ID="{9F56BFCD-4F8B-4194-8C1D-10D834F456A1}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="SFX_PuddleStep_01" ID="{C39D3997-A601-4AF6-88DA-A71E195C1E7F}" ShortID="681295161">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1F1A27A1-C9DD-4FF0-81FD-FC7CFBF5A46C}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{041CB286-AEDA-4DCF-A638-F10792558386}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="SFX_PuddleStep_01" ID="{71C1DF3A-BB45-4103-8C6C-3B68DF6C8EDA}">
+											<Language>SFX</Language>
+											<AudioFile>SFX_PuddleStep_01.wav</AudioFile>
+											<MediaIDList>
+												<MediaID ID="41782701"/>
+											</MediaIDList>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="SFX_PuddleStep_01" ID="{71C1DF3A-BB45-4103-8C6C-3B68DF6C8EDA}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="SFX_PuddleStep_02" ID="{5813068F-779A-4825-BED3-955ADC857D5D}" ShortID="591939580">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1F1A27A1-C9DD-4FF0-81FD-FC7CFBF5A46C}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{041CB286-AEDA-4DCF-A638-F10792558386}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="SFX_PuddleStep_02" ID="{2AD616DD-EA76-4A5D-A94E-85BFCB2B06C5}">
+											<Language>SFX</Language>
+											<AudioFile>SFX_PuddleStep_02.wav</AudioFile>
+											<MediaIDList>
+												<MediaID ID="238440177"/>
+											</MediaIDList>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="SFX_PuddleStep_02" ID="{2AD616DD-EA76-4A5D-A94E-85BFCB2B06C5}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+							</ChildrenList>
+						</RandomSequenceContainer>
 					</ChildrenList>
 				</PropertyContainer>
 			</ChildrenList>

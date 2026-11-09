@@ -3,19 +3,23 @@
 	<SoundcasterSessions>
 		<WorkUnit Name="Default Work Unit" ID="{B080D0D6-8388-4290-92B5-83592AF3A16D}" PersistMode="Standalone">
 			<ChildrenList>
-				<SoundcasterSession Name="CityIntersection_Preview" ID="{7F3C1A62-9B4E-4D2A-8C31-5E6FA2B0D917}" ShortID="642137755">
+				<SoundcasterSession Name="CityIntersection_Preview" ID="{7F3C1A62-9B4E-4D2A-8C31-5E6FA2B0D917}">
 					<ModuleList>
 						<Module>
-							<ObjectRef Name="AMB_CityIntersection_Bed" ID="{3AE2EBAC-A3E0-4D8C-89CF-67CE43FBC020}" WorkUnitID="{B05E9AC8-2F06-4D7D-83C9-12150F286395}"/>
+							<ObjectRef Name="AMB_RainCityIntersection_Bed" ID="{3AE2EBAC-A3E0-4D8C-89CF-67CE43FBC020}" WorkUnitID="{B05E9AC8-2F06-4D7D-83C9-12150F286395}"/>
 							<Position X="96" Y="48"/>
 						</Module>
 						<Module>
+							<ObjectRef Name="SFX_Rain_Random" ID="{8B860E12-E33B-4D72-90DB-08B92F5D24D0}" WorkUnitID="{B05E9AC8-2F06-4D7D-83C9-12150F286395}"/>
+							<Position X="96" Y="168"/>
+						</Module>
+						<Module>
 							<ObjectRef Name="SFX_Vehicles_Random" ID="{F888A484-9F13-4622-BE91-307806140263}" WorkUnitID="{B05E9AC8-2F06-4D7D-83C9-12150F286395}"/>
-							<Position X="96" Y="192"/>
+							<Position X="96" Y="288"/>
 						</Module>
 						<Module>
 							<ObjectRef Name="SFX_Horns_Random" ID="{F940125D-F705-43CE-A36F-9A8C316F7E69}" WorkUnitID="{B05E9AC8-2F06-4D7D-83C9-12150F286395}"/>
-							<Position X="96" Y="336"/>
+							<Position X="96" Y="408"/>
 						</Module>
 					</ModuleList>
 				</SoundcasterSession>
