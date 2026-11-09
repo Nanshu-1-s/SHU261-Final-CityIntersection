@@ -35,7 +35,12 @@
 
 ## 四、素材设计思路
 
-本作业的声音素材**全部由程序化合成生成**（见 `tools/gen_assets.mjs`），没有使用现场录音，也没有使用现成音效库。作业允许"其他你能想到的办法或途径"；合成的额外好处是每个参数都可解释、结果可复现。
+本作业的声音素材分为两部分：
+
+- **合成素材**（基底、车辆驶过、雨点打伞、踩水）：由程序生成（见 `tools/gen_assets.mjs`），每个参数都可解释、结果可复现。
+- **真实录音素材**（汽车喇叭 ×3、电瓶车鸣笛 ×3）：来自 Mixkit 免费音效库，用电平与 EQ 处理后再导出，电瓶车鸣笛是在"小汽车喇叭"录音上变调得到（见第六节）。
+
+作业允许"从各种现成的音效库素材包中搜索你需要的声音"，也允许"其他你能想到的办法或途径"，这里按"能合成好的就合成，合成不理想的用真实录音"来取舍。
 
 ### 关键取舍：怎么让雨"在"但"不抢"
 
@@ -76,11 +81,12 @@ const RAIN_GAIN_DB = 0;   // 觉得雨大改成 -3；觉得雨不够改成 +2
 | SFX_CarPassby_01.wav | 4.60 s | −3.5 dBFS | −20.7 dBFS |
 | SFX_CarPassby_02.wav | 5.40 s | −3.5 dBFS | −22.4 dBFS |
 | SFX_CarPassby_03.wav | 4.00 s | −3.5 dBFS | −20.8 dBFS |
-| SFX_EbikeHorn_01.wav | 0.65 s | −4.0 dBFS | −15.8 dBFS |
-| SFX_EbikeHorn_02.wav | 0.65 s | −9.0 dBFS | −21.2 dBFS |
-| SFX_EbikeHorn_03.wav | 0.91 s | −4.0 dBFS | −15.6 dBFS |
-| SFX_CarHorn_01.wav | 1.31 s | −5.0 dBFS | −18.7 dBFS |
-| SFX_CarHorn_02.wav | 0.80 s | −5.0 dBFS | −19.9 dBFS |
+| SFX_EbikeHorn_01.wav | 0.31 s | −5.9 dBFS | −16.3 dBFS |
+| SFX_EbikeHorn_02.wav | 0.28 s | −6.7 dBFS | −17.3 dBFS |
+| SFX_EbikeHorn_03.wav | 0.26 s | −6.3 dBFS | −16.8 dBFS |
+| SFX_CarHorn_01.wav | 0.33 s | −5.1 dBFS | −17.7 dBFS |
+| SFX_CarHorn_02.wav | 0.66 s | −5.5 dBFS | −18.5 dBFS |
+| SFX_CarHorn_03.wav | 0.55 s | −5.9 dBFS | −18.9 dBFS |
 | SFX_RainOnCanopy_01.wav | 2.60 s | −6.0 dBFS | −25.9 dBFS |
 | SFX_RainOnCanopy_02.wav | 2.60 s | −6.0 dBFS | −24.4 dBFS |
 | SFX_PuddleStep_01.wav | 0.56 s | −4.0 dBFS | −26.6 dBFS |
@@ -92,9 +98,22 @@ const RAIN_GAIN_DB = 0;   // 觉得雨大改成 -3；觉得雨不够改成 +2
 
 自检项（`node tools/analyze.mjs` 可复现）：直流偏移 < 1e-7；基底循环接缝无跳变；所有事件声尾部静音已裁除。
 
-## 六、图片版权
+## 六、素材来源与许可
 
-场景照片来自 Pixabay（Pixabay Content License，可免费使用、无需署名）：
-<https://cdn.pixabay.com/photo/2015/04/05/07/28/street-707446_1280.jpg>
+- **场景照片**：Pixabay，Pixabay Content License（可免费使用、无需署名）。
+  <https://cdn.pixabay.com/photo/2015/04/05/07/28/street-707446_1280.jpg>
+- **声源布局示意图**：本人绘制。
+- **喇叭类录音**：Mixkit 免费音效库，Mixkit License（免费商用、无需署名）。
 
-声源布局示意图由本人绘制。
+  | 导出文件 | Mixkit 原始条目 | 处理 |
+  | --- | --- | --- |
+  | SFX_CarHorn_01 | Classic car horn（#1565） | 裁静音、90 Hz 高通、320 Hz −2 dB、峰值 −4 dBFS |
+  | SFX_CarHorn_02 | Car double horn（#719） | 同上，峰值 −4.5 dBFS |
+  | SFX_CarHorn_03 | Car horn（#718） | 同上，峰值 −5 dBFS |
+  | SFX_EbikeHorn_01 | Small car horn（#717） | 变调 ×1.25，240 Hz 高通 |
+  | SFX_EbikeHorn_02 | Small car horn（#717） | 变调 ×1.42，280 Hz 高通 |
+  | SFX_EbikeHorn_03 | Small car horn（#717） | 变调 ×1.58，320 Hz 高通 |
+
+  电瓶车鸣笛用"小汽车喇叭"录音变调派生：国内电瓶车喇叭是短促的电子蜂鸣，音高比汽车喇叭高一个八度左右，直接在真实录音上做速率/音高变换比重新合成更自然。导入流程已脚本化（`tools/import_library_sfx.mjs`），下载、裁剪、变调、EQ、48k24 导出全部可重跑。
+
+- 其余素材（基底、车辆驶过、雨点打伞、踩水）为本作业自写算法合成。
