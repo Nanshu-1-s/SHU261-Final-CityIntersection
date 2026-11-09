@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<style>
+  html,body{margin:0;padding:0;background:#12161c;}
+  svg{display:block;}
+  text{font-family:"Microsoft YaHei","Segoe UI",sans-serif;}
+</style>
+</head>
+<body>
+<svg width="1600" height="1000" viewBox="0 0 1600 1000" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#f6c76a"/>
+    </marker>
+    <radialGradient id="bedGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#3f6f8f" stop-opacity="0.30"/>
+      <stop offset="70%" stop-color="#2d566e" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#24455a" stop-opacity="0.05"/>
+    </radialGradient>
+  </defs>
+
+  <!-- 背景 -->
+  <rect width="1600" height="1000" fill="#0e1217"/>
+
+  <!-- 街区 -->
+  <rect x="0" y="0" width="1600" height="1000" fill="#1b2028"/>
+  <g fill="#242a33" stroke="#2f3742" stroke-width="2">
+    <rect x="40" y="40" width="600" height="300" rx="6"/>
+    <rect x="960" y="40" width="600" height="300" rx="6"/>
+    <rect x="40" y="660" width="600" height="300" rx="6"/>
+    <rect x="960" y="660" width="600" height="300" rx="6"/>
+  </g>
+
+  <!-- 基底声覆盖区 -->
+  <ellipse cx="800" cy="500" rx="700" ry="420" fill="url(#bedGlow)"/>
+
+  <!-- 道路 -->
+  <rect x="0" y="360" width="1600" height="280" fill="#2b3138"/>
+  <rect x="660" y="0" width="280" height="1000" fill="#2b3138"/>
+  <!-- 道路边线 -->
+  <g stroke="#5b6675" stroke-width="4" stroke-dasharray="26 20" opacity="0.75">
+    <line x1="0" y1="362" x2="1600" y2="362"/>
+    <line x1="0" y1="638" x2="1600" y2="638"/>
+    <line x1="662" y1="0" x2="662" y2="1000"/>
+    <line x1="938" y1="0" x2="938" y2="1000"/>
+  </g>
+  <!-- 中心虚线 -->
+  <g stroke="#c9d3e0" stroke-width="5" stroke-dasharray="34 26" opacity="0.55">
+    <line x1="0" y1="500" x2="640" y2="500"/>
+    <line x1="960" y1="500" x2="1600" y2="500"/>
+    <line x1="800" y1="0" x2="800" y2="340"/>
+    <line x1="800" y1="660" x2="800" y2="1000"/>
+  </g>
+  <!-- 斑马线 -->
+  <g fill="#dfe6ef" opacity="0.85">
+    <g>
+      <rect x="612" y="372" width="34" height="12"/><rect x="612" y="396" width="34" height="12"/>
+      <rect x="612" y="420" width="34" height="12"/><rect x="612" y="444" width="34" height="12"/>
+      <rect x="612" y="468" width="34" height="12"/><rect x="612" y="492" width="34" height="12"/>
+      <rect x="612" y="516" width="34" height="12"/><rect x="612" y="540" width="34" height="12"/>
+      <rect x="612" y="564" width="34" height="12"/><rect x="612" y="588" width="34" height="12"/>
+      <rect x="612" y="612" width="34" height="12"/>
+    </g>
+    <g>
+      <rect x="954" y="372" width="34" height="12"/><rect x="954" y="396" width="34" height="12"/>
+      <rect x="954" y="420" width="34" height="12"/><rect x="954" y="444" width="34" height="12"/>
+      <rect x="954" y="468" width="34" height="12"/><rect x="954" y="492" width="34" height="12"/>
+      <rect x="954" y="516" width="34" height="12"/><rect x="954" y="540" width="34" height="12"/>
+      <rect x="954" y="564" width="34" height="12"/><rect x="954" y="588" width="34" height="12"/>
+      <rect x="954" y="612" width="34" height="12"/>
+    </g>
+    <g>
+      <rect x="672" y="312" width="12" height="34"/><rect x="696" y="312" width="12" height="34"/>
+      <rect x="720" y="312" width="12" height="34"/><rect x="744" y="312" width="12" height="34"/>
+      <rect x="768" y="312" width="12" height="34"/><rect x="792" y="312" width="12" height="34"/>
+      <rect x="816" y="312" width="12" height="34"/><rect x="840" y="312" width="12" height="34"/>
+      <rect x="864" y="312" width="12" height="34"/><rect x="888" y="312" width="12" height="34"/>
+      <rect x="912" y="312" width="12" height="34"/>
+    </g>
+    <g>
+      <rect x="672" y="654" width="12" height="34"/><rect x="696" y="654" width="12" height="34"/>
+      <rect x="720" y="654" width="12" height="34"/><rect x="744" y="654" width="12" height="34"/>
+      <rect x="768" y="654" width="12" height="34"/><rect x="792" y="654" width="12" height="34"/>
+      <rect x="816" y="654" width="12" height="34"/><rect x="840" y="654" width="12" height="34"/>
+      <rect x="864" y="654" width="12" height="34"/><rect x="888" y="654" width="12" height="34"/>
+      <rect x="912" y="654" width="12" height="34"/>
+    </g>
+  </g>
+
+  <!-- 距离环（以听点为圆心） -->
+  <g fill="none" stroke="#6ea8c9" stroke-opacity="0.55">
+    <circle cx="380" cy="700" r="35"  stroke-width="1.5" stroke-dasharray="6 6"/>
+    <circle cx="380" cy="700" r="105" stroke-width="1.5" stroke-dasharray="6 6"/>
+    <circle cx="380" cy="700" r="210" stroke-width="1.5" stroke-dasharray="6 6"/>
+    <circle cx="380" cy="700" r="420" stroke-width="1.5" stroke-dasharray="6 6"/>
+  </g>
+  <g fill="#6ea8c9" font-size="15" opacity="0.9">
+    <text x="386" y="676">5m</text>
+    <text x="390" y="608">15m</text>
+    <text x="392" y="502">30m</text>
+    <text x="404" y="288">60m</text>
+  </g>
+
+  <!-- 听点 -->
+  <g>
+    <circle cx="380" cy="700" r="13" fill="#f2b544" stroke="#1b2028" stroke-width="3"/>
+    <text x="380" y="746" fill="#f2b544" font-size="19" text-anchor="middle" font-weight="bold">听点 Listener</text>
+  </g>
+
+  <!-- 车辆驶过轨迹 -->
+  <g stroke="#f6c76a" stroke-width="4" fill="none" marker-end="url(#arrow)" opacity="0.95">
+    <path d="M-20,432 L1620,432"/>
+    <path d="M1620,566 L-20,566"/>
+  </g>
+  <g fill="#f6c76a" font-size="18">
+    <text x="1010" y="410">② 车辆驶过 ×3（左→右）</text>
+    <text x="120" y="602">② 车辆驶过 ×3（右→左）</text>
+  </g>
+
+  <!-- 电瓶车鸣笛 -->
+  <g>
+    <g transform="translate(628,668)">
+      <circle r="17" fill="#e0674f" opacity="0.9"/>
+      <text y="6" fill="#fff" font-size="16" text-anchor="middle" font-weight="bold">!</text>
+    </g>
+    <text x="654" y="720" fill="#e0674f" font-size="18">③ 电瓶车鸣笛 ×3</text>
+  </g>
+  <g>
+    <g transform="translate(972,332)">
+      <circle r="17" fill="#e0674f" opacity="0.9"/>
+      <text y="6" fill="#fff" font-size="16" text-anchor="middle" font-weight="bold">!</text>
+    </g>
+    <text x="996" y="300" fill="#e0674f" font-size="18">③ 电瓶车鸣笛 ×3</text>
+  </g>
+
+  <!-- 汽车喇叭 -->
+  <g>
+    <g transform="translate(800,830)">
+      <circle r="18" fill="#c0559b" opacity="0.9"/>
+      <text y="6" fill="#fff" font-size="15" text-anchor="middle" font-weight="bold">!!</text>
+    </g>
+    <text x="800" y="886" fill="#c0559b" font-size="18" text-anchor="middle">④ 汽车喇叭 ×2</text>
+  </g>
+
+  <!-- 标题 -->
+  <text x="60" y="82" fill="#e8eef6" font-size="34" font-weight="bold">城市十字路口环境声设计 · 场景与声源布局</text>
+  <text x="60" y="118" fill="#9aa8b8" font-size="19">City Intersection — Ambience Design Layout</text>
+
+  <!-- 基底说明 -->
+  <g>
+    <rect x="980" y="60" width="560" height="126" rx="8" fill="#16222b" stroke="#3f6f8f" stroke-width="2"/>
+    <text x="1004" y="96" fill="#8fc4e0" font-size="21" font-weight="bold">① 基底持续声 Base Ambience</text>
+    <text x="1004" y="126" fill="#c6d4e2" font-size="17">城市车流 + 街道底噪 + 远处人声 + 50Hz 电网嗡鸣</text>
+    <text x="1004" y="154" fill="#8fa3b5" font-size="16">60s 无缝循环 · Wwise 内无限循环播放 · 关闭距离衰减</text>
+  </g>
+
+  <!-- 图例 -->
+  <g>
+    <rect x="980" y="742" width="560" height="206" rx="8" fill="#16222b" stroke="#2f3742" stroke-width="2"/>
+    <text x="1004" y="778" fill="#e8eef6" font-size="19" font-weight="bold">图例 Legend</text>
+    <circle cx="1016" cy="806" r="8" fill="#f2b544"/>
+    <text x="1034" y="812" fill="#c6d4e2" font-size="16">听点 / 距离衰减以听点为圆心</text>
+    <circle cx="1016" cy="838" r="8" fill="#e0674f"/>
+    <text x="1034" y="844" fill="#c6d4e2" font-size="16">近距离间断声（电瓶车鸣笛）</text>
+    <circle cx="1016" cy="870" r="8" fill="#c0559b"/>
+    <text x="1034" y="876" fill="#c6d4e2" font-size="16">中距离间断声（汽车喇叭）</text>
+    <line x1="1004" y1="902" x2="1028" y2="902" stroke="#f6c76a" stroke-width="4" marker-end="url(#arrow)"/>
+    <text x="1034" y="908" fill="#c6d4e2" font-size="16">车辆驶过轨迹（含多普勒感）</text>
+    <circle cx="1016" cy="934" r="8" fill="none" stroke="#6ea8c9" stroke-dasharray="4 4"/>
+    <text x="1034" y="940" fill="#8fa3b5" font-size="16">距离环 5 / 15 / 30 / 60 m</text>
+  </g>
+</svg>
+</body>
+</html>

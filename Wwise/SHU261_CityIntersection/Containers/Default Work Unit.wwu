@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{B05E9AC8-2F06-4D7D-83C9-12150F286395}" SchemaVersion="133">
+	<Containers>
+		<WorkUnit Name="Default Work Unit" ID="{B05E9AC8-2F06-4D7D-83C9-12150F286395}" PersistMode="Standalone">
+			<ChildrenList>
+				<PropertyContainer Name="Ambience_CityIntersection" ID="{F2F8C4FA-AA28-46B5-B88D-2D5A61C5E5B9}" ShortID="915105893">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1F1A27A1-C9DD-4FF0-81FD-FC7CFBF5A46C}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{041CB286-AEDA-4DCF-A638-F10792558386}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<RandomSequenceContainer Name="SFX_Vehicles_Random" ID="{F888A484-9F13-4622-BE91-307806140263}" ShortID="16527928">
+							<ReferenceList>
+								<Reference Name="Attenuation">
+									<ObjectRef Name="ATT_CityStreet_Distance" ID="{2C44FDC5-87C2-46EB-A75F-CA4BD7BF54B0}" WorkUnitID="{D1080DC3-7EB3-4E2A-85A8-B3C5CAFCC6CB}"/>
+								</Reference>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1F1A27A1-C9DD-4FF0-81FD-FC7CFBF5A46C}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{041CB286-AEDA-4DCF-A638-F10792558386}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<Sound Name="SFX_CarPassby_01" ID="{CDB1F8F4-E12A-489C-9658-9E33970D36F4}" ShortID="644351969">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1F1A27A1-C9DD-4FF0-81FD-FC7CFBF5A46C}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{041CB286-AEDA-4DCF-A638-F10792558386}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="SFX_CarPassby_01" ID="{DBB69BEE-98A8-4088-B23C-E3CC4E6B55E3}">
+											<Language>SFX</Language>
+											<AudioFile>SFX_CarPassby_01.wav</AudioFile>
+											<MediaIDList>
+												<MediaID ID="794563745"/>
+											</MediaIDList>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="SFX_CarPassby_01" ID="{DBB69BEE-98A8-4088-B23C-E3CC4E6B55E3}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="SFX_CarPassby_02" ID="{26F0108A-E4E9-481F-B124-B4C6907EF7C0}" ShortID="778757239">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1F1A27A1-C9DD-4FF0-81FD-FC7CFBF5A46C}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{041CB286-AEDA-4DCF-A638-F10792558386}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="SFX_CarPassby_02" ID="{0BEDDCC9-CEEB-4E2F-8B07-951043E94FF1}">
+											<Language>SFX</Language>
+											<AudioFile>SFX_CarPassby_02.wav</AudioFile>
+											<MediaIDList>
+												<MediaID ID="543396428"/>
+											</MediaIDList>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="SFX_CarPassby_02" ID="{0BEDDCC9-CEEB-4E2F-8B07-951043E94FF1}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="SFX_CarPassby_03" ID="{0D8AD4F7-4146-4F20-B12A-3310A396B977}" ShortID="718850004">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1F1A27A1-C9DD-4FF0-81FD-FC7CFBF5A46C}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{041CB286-AEDA-4DCF-A638-F10792558386}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="SFX_CarPassby_03" ID="{1D86AC77-B887-471D-8EDB-5DB1877EA311}">
+											<Language>SFX</Language>
+											<AudioFile>SFX_CarPassby_03.wav</AudioFile>
+											<MediaIDList>
+												<MediaID ID="513774989"/>
+											</MediaIDList>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="SFX_CarPassby_03" ID="{1D86AC77-B887-471D-8EDB-5DB1877EA311}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+							</ChildrenList>
+						</RandomSequenceContainer>
+						<RandomSequenceContainer Name="SFX_Horns_Random" ID="{F940125D-F705-43CE-A36F-9A8C316F7E69}" ShortID="615326110">
+							<ReferenceList>
+								<Reference Name="Attenuation">
+									<ObjectRef Name="ATT_CityStreet_Distance" ID="{2C44FDC5-87C2-46EB-A75F-CA4BD7BF54B0}" WorkUnitID="{D1080DC3-7EB3-4E2A-85A8-B3C5CAFCC6CB}"/>
+								</Reference>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1F1A27A1-C9DD-4FF0-81FD-FC7CFBF5A46C}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{041CB286-AEDA-4DCF-A638-F10792558386}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<Sound Name="SFX_EbikeHorn_01" ID="{1211F313-CBA6-4540-84BA-9BFFA592FF25}" ShortID="689687006">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1F1A27A1-C9DD-4FF0-81FD-FC7CFBF5A46C}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{041CB286-AEDA-4DCF-A638-F10792558386}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="SFX_EbikeHorn_01" ID="{C5EB49BD-8315-4D4A-94F4-4CD9DB380118}">
+											<Language>SFX</Language>
+											<AudioFile>SFX_EbikeHorn_01.wav</AudioFile>
+											<MediaIDList>
+												<MediaID ID="581635240"/>
+											</MediaIDList>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="SFX_EbikeHorn_01" ID="{C5EB49BD-8315-4D4A-94F4-4CD9DB380118}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="SFX_EbikeHorn_02" ID="{EE79857B-AC4F-4996-8B62-0CD294999BAB}" ShortID="333993788">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1F1A27A1-C9DD-4FF0-81FD-FC7CFBF5A46C}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{041CB286-AEDA-4DCF-A638-F10792558386}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="SFX_EbikeHorn_02" ID="{B28B9368-0779-41A0-B77A-9B60B43FEC8A}">
+											<Language>SFX</Language>
+											<AudioFile>SFX_EbikeHorn_02.wav</AudioFile>
+											<MediaIDList>
+												<MediaID ID="365217126"/>
+											</MediaIDList>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="SFX_EbikeHorn_02" ID="{B28B9368-0779-41A0-B77A-9B60B43FEC8A}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="SFX_EbikeHorn_03" ID="{B8544E94-70D0-46CF-9B0D-7180E0A91867}" ShortID="729502540">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1F1A27A1-C9DD-4FF0-81FD-FC7CFBF5A46C}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{041CB286-AEDA-4DCF-A638-F10792558386}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="SFX_EbikeHorn_03" ID="{E4814479-CEA4-46BA-A25A-759DC80CF79B}">
+											<Language>SFX</Language>
+											<AudioFile>SFX_EbikeHorn_03.wav</AudioFile>
+											<MediaIDList>
+												<MediaID ID="333034144"/>
+											</MediaIDList>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="SFX_EbikeHorn_03" ID="{E4814479-CEA4-46BA-A25A-759DC80CF79B}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="SFX_CarHorn_01" ID="{BC6A1C4D-B85A-45A3-A5D7-89DD100222EB}" ShortID="776963525">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1F1A27A1-C9DD-4FF0-81FD-FC7CFBF5A46C}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{041CB286-AEDA-4DCF-A638-F10792558386}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="SFX_CarHorn_01" ID="{9616E433-BE3D-4D63-BB9A-DDC50458A22D}">
+											<Language>SFX</Language>
+											<AudioFile>SFX_CarHorn_01.wav</AudioFile>
+											<MediaIDList>
+												<MediaID ID="612058617"/>
+											</MediaIDList>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="SFX_CarHorn_01" ID="{9616E433-BE3D-4D63-BB9A-DDC50458A22D}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="SFX_CarHorn_02" ID="{2177ADA4-3A0A-48B3-9A30-E0BF2543D1F5}" ShortID="658323096">
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1F1A27A1-C9DD-4FF0-81FD-FC7CFBF5A46C}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{041CB286-AEDA-4DCF-A638-F10792558386}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="SFX_CarHorn_02" ID="{60F10FDB-54EA-4EC8-8B5A-408AFFC6B731}">
+											<Language>SFX</Language>
+											<AudioFile>SFX_CarHorn_02.wav</AudioFile>
+											<MediaIDList>
+												<MediaID ID="884067876"/>
+											</MediaIDList>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="SFX_CarHorn_02" ID="{60F10FDB-54EA-4EC8-8B5A-408AFFC6B731}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+							</ChildrenList>
+						</RandomSequenceContainer>
+						<Sound Name="AMB_CityIntersection_Bed" ID="{3AE2EBAC-A3E0-4D8C-89CF-67CE43FBC020}" ShortID="844351623">
+							<PropertyList>
+								<Property Name="EnableAttenuation" Type="bool" Value="False"/>
+								<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1F1A27A1-C9DD-4FF0-81FD-FC7CFBF5A46C}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{041CB286-AEDA-4DCF-A638-F10792558386}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="AMB_CityIntersection_Bed_Loop" ID="{A3E0A229-9AF6-45F4-8CF5-BD8E50FECF4F}">
+									<Language>SFX</Language>
+									<AudioFile>AMB_CityIntersection_Bed_Loop.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="217697441"/>
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="AMB_CityIntersection_Bed_Loop" ID="{A3E0A229-9AF6-45F4-8CF5-BD8E50FECF4F}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+					</ChildrenList>
+				</PropertyContainer>
+			</ChildrenList>
+		</WorkUnit>
+	</Containers>
+</WwiseDocument>

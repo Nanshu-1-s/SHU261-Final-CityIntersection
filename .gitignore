@@ -1,0 +1,20 @@
+# ---- Wwise 生成物 / 本地缓存（不入库）----
+Wwise/SHU261_CityIntersection/.cache/
+Wwise/SHU261_CityIntersection/GeneratedSoundBanks/
+Wwise/SHU261_CityIntersection/*.wsettings
+Wwise/SHU261_CityIntersection/*.validationcache
+Wwise/SHU261_CityIntersection/*.prof
+Wwise/SHU261_CityIntersection/*.akd
+Wwise/SHU261_CityIntersection/IncrementalSoundBankData.xml
+Wwise/SHU261_CityIntersection/.backup*/
+
+# ---- 编辑器 / 系统 ----
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# ---- 临时 ----
+*.log
+*.tmp
