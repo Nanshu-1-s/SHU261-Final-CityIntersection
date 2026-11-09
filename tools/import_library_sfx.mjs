@@ -26,6 +26,14 @@ const JOBS = [
   { id: 717, out: 'SFX_EbikeHorn_01', pitch: 1.25, hp: 240, peakDb: -5.0, note: 'Small car horn ×1.25' },
   { id: 717, out: 'SFX_EbikeHorn_02', pitch: 1.42, hp: 280, peakDb: -6.0, note: 'Small car horn ×1.42' },
   { id: 717, out: 'SFX_EbikeHorn_03', pitch: 1.58, hp: 320, peakDb: -5.5, note: 'Small car horn ×1.58' },
+
+  // 雨点打伞 / 雨棚：真实雨声录音，补高频、裁到 3 秒左右
+  { id: 1264, out: 'SFX_RainOnCanopy_01', pitch: 1.00, hp: 220, peakDb: -8.0, maxSec: 3.2, boost: [[5000, 0.8, 3.0]], note: 'Rain splashing' },
+  { id: 1264, out: 'SFX_RainOnCanopy_02', pitch: 1.06, hp: 240, peakDb: -9.0, maxSec: 3.2, boost: [[4500, 0.8, 2.0]], note: 'Rain splashing ×1.06（远，偏暗）' },
+
+  // 踩水：真实水花，压到 1 秒内
+  { id: 1311, out: 'SFX_PuddleStep_01', pitch: 1.00, hp: 80, peakDb: -5.0, maxSec: 0.8, note: 'Water splash' },
+  { id: 1311, out: 'SFX_PuddleStep_02', pitch: 0.90, hp: 70, peakDb: -6.0, maxSec: 0.8, note: 'Water splash ×0.90' },
 ];
 
 /* ---------- 读取 24bit WAV ---------- */
@@ -115,11 +123,20 @@ for (const job of JOBS) {
     'areverse',
     `highpass=f=${job.hp}`,
     'equalizer=f=320:width_type=o:width=1:g=-2',
+  );
+  // 可选的高频补偿（真实录音普遍偏暗）
+  for (const [f, q, g] of job.boost ?? []) {
+    filters.push(`equalizer=f=${f}:width_type=q:width=${q}:g=${g}`);
+  }
+  filters.push(
     'lowpass=f=16000',
     'aformat=sample_fmts=s32:sample_rates=48000:channel_layouts=stereo',
   );
 
-  execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', src, '-af', filters.join(','), '-c:a', 'pcm_s24le', stage]);
+  const ffArgs = ['-v', 'error', '-y', '-i', src];
+  if (job.maxSec) ffArgs.push('-t', String(job.maxSec));
+  ffArgs.push('-af', filters.join(','), '-c:a', 'pcm_s24le', stage);
+  execFileSync('ffmpeg', ffArgs);
 
   // 峰值归一 + 软限幅 + 头尾 3ms 微淡（防爆音）
   const [l, r] = readWav24(stage);

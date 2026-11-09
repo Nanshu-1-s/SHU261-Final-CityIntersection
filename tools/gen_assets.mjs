@@ -366,8 +366,12 @@ function writeWav24(path, [l, r], { dither = true } = {}) {
 const BED_TARGET = [-60, -60, -64, -64, -67, -70, -80];
 
 // 雨层总增益（dB）。觉得雨大就调小，比如 -3；觉得雨不够就调 +2
-const RAIN_GAIN_DB = 0;
-const RAIN_GAIN = Math.pow(10, RAIN_GAIN_DB / 20);
+let RAIN_GAIN_DB = Number(process.env.RAIN_DB ?? 0);
+let RAIN_GAIN = Math.pow(10, RAIN_GAIN_DB / 20);
+
+// --city-only-bed：只产出"城市层"（雨静音）到 _library_cache，供真实雨声混底
+const CITY_ONLY_BED = process.argv.includes('--city-only-bed');
+if (CITY_ONLY_BED) RAIN_GAIN = 0;
 
 /* 稀疏水珠：泊松分布的短促颗粒，是"小雨沙沙"的核心 —— 粒度感来自密度，不是音量 */
 function rainGrains(n, rnd, { ratePerSec, tauMsMin, tauMsMax, amp = 1 }) {
@@ -736,6 +740,17 @@ function buildPuddleStep(seed) {
 const fmt = (b) => (b / 1048576).toFixed(1) + ' MB';
 const lvl = ([l, r]) =>
   `RMS ${gainToDb(Math.sqrt((rmsOf(l) ** 2 + rmsOf(r) ** 2) / 2)).toFixed(1)} / peak ${gainToDb(Math.max(peakOf(l), peakOf(r))).toFixed(1)} dBFS`;
+
+if (CITY_ONLY_BED) {
+  // 只产出城市层，供 build_rain_bed.mjs 与真实雨声混合
+  console.log('▶ 仅生成城市层（雨静音）→ _library_cache/city_bed_60s.wav');
+  const city = buildCityBed(60, 3);
+  const p = join(ROOT, '_library_cache', 'city_bed_60s.wav');
+  writeWav24(p, city.st);
+  console.log(`  ✓ ${lvl(city.st)}`);
+  console.log('完成');
+  process.exit(0);
+}
 
 console.log(`▶ 基底环境声 AMB_RainCityIntersection_Bed_Loop.wav（小雨路口，雨层 ${RAIN_GAIN_DB >= 0 ? '+' : ''}${RAIN_GAIN_DB} dB）`);
 const bed = buildCityBed(60, 3);

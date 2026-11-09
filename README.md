@@ -102,24 +102,26 @@ const RAIN_GAIN_DB = 0;   // 雨大改 -3，雨不够改 +2
 然后重跑：
 
 ```bash
-node tools/gen_assets.mjs
+node tools/gen_assets.mjs          # 生成城市层与车辆驶过（合成部分）
 node tools/update_wwise_rain.mjs   # 需要 WwiseConsole waapi-server 在跑
 ```
 
 ## 五、素材是怎么来的（重要声明）
 
-素材分两类，来源都写在 `Docs/Scene_CityIntersection.md` 第六节：
+素材分三类，来源都写在 `Docs/Scene_CityIntersection.md` 第六节：
 
-- **合成素材**：基底（小雨 + 车流 + 底噪）、车辆驶过、雨点打伞、踩水。由 `tools/gen_assets.mjs` 生成，每个参数可解释、结果可复现。
-- **真实录音素材**：汽车喇叭 ×3、电瓶车鸣笛 ×3，来自 Mixkit 免费音效库（Mixkit License，免费商用、无需署名）。电瓶车鸣笛是在"小汽车喇叭"录音上变调 1.25 / 1.42 / 1.58 倍派生，导入流程见 `tools/import_library_sfx.mjs`。
+- **真实录音**：基底雨声、雨点打伞 ×2、踩水 ×2、汽车喇叭 ×3，来自 Mixkit 免费音效库（Mixkit License，免费商用、无需署名）。
+- **真实录音派生**：电瓶车鸣笛 ×3（小汽车喇叭变调 1.25 / 1.42 / 1.58 倍）、雨点打伞第二条（变调 1.06 倍并压暗）。
+- **算法合成**：基底中的城市层（车流 / 隆隆 / 人声）、车辆驶过 ×3，由 `tools/gen_assets.mjs` 生成。
 
-作业允许"从各种现成的音效库素材包中搜索你需要的声音"与"其他你能想到的办法或途径"。实践中的取舍：能合成到位的用合成（可控、可复现），合成听感不理想的（喇叭类）换成真实录音。
+作业允许"从各种现成的音效库素材包中搜索你需要的声音"与"其他你能想到的办法或途径"。实践中的取舍：能合成到位的用合成（可控、可复现），合成听感不理想的（雨、喇叭）换成真实录音。
 
 复现命令（需要 Node.js 与 ffmpeg，无 npm 依赖）：
 
 ```bash
-node tools/gen_assets.mjs          # 生成合成素材到 AudioAssets/Exported/
-node tools/import_library_sfx.mjs  # 下载并处理真实喇叭素材
+node tools/gen_assets.mjs          # 生成城市层与车辆驶过（合成部分）
+node tools/import_library_sfx.mjs  # 下载并处理真实喇叭 / 雨声事件
+node tools/build_rain_bed.mjs      # 真实雨声 + 城市层 → 60s 基底（30s 周期 ×2）
 node tools/mix_preview.mjs         # 生成 60s 成片预览 Preview/CityIntersection_Preview_Mix_60s.wav
 node tools/analyze.mjs             # 自检：格式、峰值、直流、循环接缝、频谱、立体声相关度
 ```
