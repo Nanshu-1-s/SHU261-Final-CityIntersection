@@ -78,6 +78,20 @@ function analyze(path) {
   for (let i = 1; i < 2000; i++) inner += Math.abs(L[i] - L[i - 1]);
   inner /= 1999;
 
+  // 立体声：左右相关系数 + 中侧能量比（S/M，dB）
+  let sxy = 0, sxx = 0, syy = 0, eMid = 0, eSide = 0;
+  for (let i = 0; i < L.length; i++) {
+    sxy += L[i] * R[i];
+    sxx += L[i] * L[i];
+    syy += R[i] * R[i];
+    const m = 0.5 * (L[i] + R[i]);
+    const s = 0.5 * (L[i] - R[i]);
+    eMid += m * m;
+    eSide += s * s;
+  }
+  const corr = sxy / Math.sqrt(sxx * syy || 1);
+  const sideMidDb = 20 * Math.log10(Math.sqrt(eSide / (eMid || 1e-12)));
+
   // 中段频谱（避开淡入区）
   const start = Math.floor(L.length * 0.25);
   const len = Math.min(16384, L.length - start - 1);
@@ -99,6 +113,7 @@ function analyze(path) {
     peak: (20 * Math.log10(peak)).toFixed(1),
     rms: (20 * Math.log10(rms)).toFixed(1),
     dc: dcOff.toExponential(1),
+    stereo: `L/R 相关 ${corr.toFixed(3)} | S/M ${sideMidDb.toFixed(1)} dB`,
     seam: `${seam.toExponential(1)} (inner ${inner.toExponential(1)})`,
     spec: spec.join(' '),
     env: env.join(','),
@@ -113,6 +128,7 @@ for (const f of files) {
   const r = analyze(f);
   console.log(`\n=== ${r.file}  ${r.dur}s  ${r.fmt}`);
   console.log(`    peak ${r.peak} dBFS | rms ${r.rms} dBFS | DC ${r.dc}`);
+  console.log(`    stereo ${r.stereo}`);
   console.log(`    loop seam Δ: ${r.seam}`);
   console.log(`    bands  ${r.spec}`);
   console.log(`    env    [${r.env}] dBFS`);

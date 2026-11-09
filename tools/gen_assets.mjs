@@ -274,6 +274,45 @@ function applyGainInPlace(arr, gainFn) {
   return arr;
 }
 
+/* -------------------------- 立体声与清晰度 -------------------------- */
+
+// 低频居中：把 fc 以下的成分换成左右单声道和。低频不再发虚，高频宽度不受影响
+function monoBelow([l, r], fc = 150, Q = 0.7) {
+  const lpL = lowpass(l, fc, Q);
+  const lpR = lowpass(r, fc, Q);
+  const outL = Float64Array.from(l);
+  const outR = Float64Array.from(r);
+  for (let i = 0; i < l.length; i++) {
+    const midLow = 0.5 * (lpL[i] + lpR[i]);
+    outL[i] = l[i] - lpL[i] + midLow;
+    outR[i] = r[i] - lpR[i] + midLow;
+  }
+  return [outL, outR];
+}
+
+// 中侧调节：amount=1 保持原样，>1 变宽
+function stereoWidth([l, r], amount = 1.15) {
+  const outL = new Float64Array(l.length);
+  const outR = new Float64Array(r.length);
+  for (let i = 0; i < l.length; i++) {
+    const m = 0.5 * (l[i] + r[i]);
+    const s = 0.5 * (l[i] - r[i]) * amount;
+    outL[i] = m + s;
+    outR[i] = m - s;
+  }
+  return [outL, outR];
+}
+
+// 清晰度：切掉听不见却占电平的超低频、削掉泥浆、去掉刺耳极高频
+function clarityEQ(ch, { hp = 32, mud = 320, mudDb = -2.5, carve = 2200, carveDb = -2, lp = 14000, presence = 0 } = {}) {
+  let x = highpass(ch, hp, 0.7);
+  if (mudDb) x = applyBiquad(x, biquadCoeffs('peak', mud, 0.8, mudDb));
+  if (carveDb) x = applyBiquad(x, biquadCoeffs('peak', carve, 0.7, carveDb));
+  if (presence) x = applyBiquad(x, biquadCoeffs('peak', 2600, 1.0, presence));
+  if (lp) x = lowpass(x, lp, 0.6);
+  return x;
+}
+
 function addIn(dest, src, offsetSec = 0, gain = 1) {
   const off = Math.round(offsetSec * FS);
   for (let i = 0; i < src.length; i++) {
@@ -363,59 +402,54 @@ function buildCityBed(seconds = 60, xfade = 3) {
     const crowd = bandpass(pinkNoise(n, rnd), 1600, 0.8);
 
     // ── 雨层 ──
-    // ① 细雨沙沙：颗粒率降到 700/s，避免"密度过载"的噪声墙感
+    // ① 细雨沙沙：颗粒率 700/s，避免"密度过载"的噪声墙感
     const sizzle = bandpass(rainGrains(n, rnd, { ratePerSec: 700, tauMsMin: 1.4, tauMsMax: 3.4, amp: 0.42 }), 4400, 1.0);
     const sizzleHi = highpass(sizzle, 6200, 0.7);
-    // ② 可辨识的水珠：更稀疏，一次能听出"单颗"
+    // ② 可辨识的水珠：稀疏，一次能听出"单颗"
     const drops = bandpass(rainGrains(n, rnd, { ratePerSec: 20, tauMsMin: 5, tauMsMax: 14, amp: 1.5 }), 3400, 1.2);
-    // ③ 雨幕底：极轻的连续层，只负责把颗粒"粘"起来
-    const veil = bandpass(pinkNoise(n, rnd), 6400, 0.7);
-    // ④ 湿路面：雨中轮胎的黏滞感，只在 700–1500 Hz，压到很轻
-    const wetRoad = bandpass(pinkNoise(n, rnd), 1050, 1.2);
-
-    const hum = new Float64Array(n);
-    for (let i = 0; i < n; i++) {
-      const t = i / FS;
-      hum[i] = Math.sin(2 * Math.PI * 50 * t) * 0.6
-             + Math.sin(2 * Math.PI * 100 * t) * 0.10;
-    }
 
     return (t, i) => {
-      // 起伏全部收窄：原来 ±18% 的呼吸感会让背景显"忙"
+      // 起伏收窄：避免背景显"忙"
       const breath = 1 + 0.09 * Math.sin(2 * Math.PI * (1 / 9) * t + 0.7)
                        + 0.05 * Math.sin(2 * Math.PI * (1 / 17) * t + 2.1);
       const flow = 0.72 + 0.16 * Math.sin(2 * Math.PI * (1 / 23) * t + 1.3)
                         + 0.07 * Math.sin(2 * Math.PI * (1 / 7) * t + 3.4);
       const crowdLvl = Math.max(0, 0.5 + 0.22 * Math.sin(2 * Math.PI * (1 / 31) * t));
-      // 雨的强度起伏：小雨时大时小，周期 67 s，幅度收窄到 ±1.5 dB
+      // 雨的强度起伏：小雨时大时小，周期 67 s，幅度 ±1.5 dB
       const rainGust = 1 + 0.15 * Math.sin(2 * Math.PI * (1 / 67) * t + 1.2);
 
+      // 只剩三层：低频隆隆 + 车流 + 远处人声（雨幕底、湿路面、电网嗡鸣已删除）
       const city = (rumble[i] * 0.50 + subRumble[i] * 1.0) * breath
                  + traffic[i] * flow * 1.30
-                 + crowd[i] * crowdLvl * 0.40
-                 + wetRoad[i] * flow * 0.26
-                 + hum[i] * 0.004;
+                 + crowd[i] * crowdLvl * 0.40;
 
-      const rain = (sizzle[i] * 1.0 + sizzleHi[i] * 0.28 + drops[i] * 1.0 + veil[i] * 0.055) * rainGust;
+      const rain = (sizzle[i] * 1.0 + sizzleHi[i] * 0.28 + drops[i] * 1.0) * rainGust;
 
       return city + rain * RAIN_GAIN;
     };
   };
 
-  const synthL = build(20261109);
-  const synthR = build(77123);
+  const midSynth = build(20261109);
+  const sideSynth = build(77123);
 
+  // 共通主干 + 独立侧信号：L=M+0.6S、R=M−0.6S
+  // 相关度约 0.45 —— 宽度足够、单声道相加不抵消（直接做两套独立噪声会反相）
+  const SIDE_GAIN = 0.6;
   const L = new Float64Array(n);
   const R = new Float64Array(n);
   for (let i = 0; i < n; i++) {
     const t = i / FS;
-    L[i] = synthL(t, i);
-    R[i] = synthR(t, i);
+    const m = midSynth(t, i);
+    const s = sideSynth(t, i) * SIDE_GAIN;
+    L[i] = m + s;
+    R[i] = m - s;
   }
 
-  // 频谱校准 → 直流阻断
+  // 频谱校准 → 清晰度处理 → 低频居中 → 立体声展开 → 直流阻断
   let chans = [dcBlock(L), dcBlock(R)];
   const cal = correctSpectrum(chans, BED_TARGET);
+  chans = chans.map((c) => clarityEQ(c, { hp: 30, mud: 300, mudDb: -2.5, carve: 2200, carveDb: -2.0, lp: 13500 }));
+  chans = monoBelow(chans, 150, 0.7);
   chans = chans.map((c) => dcBlock(c));
 
   // 等功率交叉淡化：末段与首段功率互补，接缝处连续
@@ -505,6 +539,8 @@ function buildCarPassby(seed, { duration = 5.2, closeness = 0.72, peakAt = 0.56,
   st = [outdoorReflections(st[0], [{ delay: 0.041, gain: 0.22, lp: 2600 }, { delay: 0.077, gain: 0.14, lp: 2000 }]),
         outdoorReflections(st[1], [{ delay: 0.053, gain: 0.20, lp: 2400 }, { delay: 0.089, gain: 0.12, lp: 1900 }])];
   st = [st[0].subarray(0, n), st[1].subarray(0, n)];
+  st = st.map((ch) => clarityEQ(ch, { hp: 45, mud: 260, mudDb: -2.0, lp: 16000 }));
+  st = stereoWidth(st, 1.10);
 
   st = normalizePeak(st, -3.5);
   st = softLimit(st, -1.5);
@@ -554,6 +590,8 @@ function buildEbikeHorn(seed, { far = false, beeps = 2 } = {}) {
         outdoorReflections(st[1], [{ delay: 0.071, gain: 0.16, lp: 3000 }])];
   st = [st[0].subarray(0, n), st[1].subarray(0, n)];
   st = trimTail(st, 0.12);
+  st = st.map((ch) => clarityEQ(ch, { hp: 120, mud: 500, mudDb: -2.0, lp: 17000, presence: 1.5 }));
+  st = stereoWidth(st, 1.30);
   st = normalizePeak(st, far ? -9 : -4);
   st = softLimit(st, -1.5);
   return { st };
@@ -600,6 +638,8 @@ function buildCarHorn(seed, { double = true } = {}) {
         outdoorReflections(st[1], [{ delay: 0.067, gain: 0.18, lp: 2700 }, { delay: 0.12, gain: 0.09, lp: 2100 }])];
   st = [st[0].subarray(0, n), st[1].subarray(0, n)];
   st = trimTail(st, 0.2);
+  st = st.map((ch) => clarityEQ(ch, { hp: 70, mud: 400, mudDb: -2.0, lp: 16000, presence: 1.0 }));
+  st = stereoWidth(st, 1.30);
   st = normalizePeak(st, -5);
   st = softLimit(st, -1.5);
   return { st };
@@ -638,6 +678,8 @@ function buildRainOnCanopy(seed, { duration = 2.6, density = 1 } = {}) {
   });
 
   let st = panToStereo(dcBlock(mono), (t) => 0.15 * Math.sin(2 * Math.PI * 0.23 * t) - 0.05);
+  st = st.map((ch) => clarityEQ(ch, { hp: 250, mud: 520, mudDb: -1.5, lp: 15000 }));
+  st = stereoWidth(st, 1.35);
   st = normalizePeak(st, -6);
   st = softLimit(st, -1.5);
   return { st };
@@ -680,6 +722,8 @@ function buildPuddleStep(seed) {
   let st = panToStereo(dcBlock(out), () => (seed % 2 === 0 ? -0.25 : 0.3));
   st = [st[0].subarray(0, cut), st[1].subarray(0, cut)];
   st = trimTail(st, 0.05);
+  st = st.map((ch) => clarityEQ(ch, { hp: 60, mud: 300, mudDb: -2.0, lp: 16000 }));
+  st = stereoWidth(st, 1.20);
   st = normalizePeak(st, -4);
   st = softLimit(st, -1.5);
   return { st };
