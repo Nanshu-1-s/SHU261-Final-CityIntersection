@@ -12,8 +12,8 @@
 | --- | --- |
 | 确定设计对象，准备照片/图片与文字说明 | `Docs/scene_photo.jpg`、`Docs/scene_layout.png`、`Docs/Scene_CityIntersection.md` |
 | 至少两种声音素材：持续基底 + 间断随机 | 基底层 1 个（小雨 + 车流 + 街道底噪，60 s）+ 间断层 13 个 |
-| 至少导出：>30 s 基底 ×1、间断随机声 ≥3 个 | 60 s 基底 ×1；驶过 ×3、电瓶车鸣笛 ×3、汽车喇叭 ×2、雨点打伞 ×2、踩水 ×2 |
-| 格式 48 kHz / 24 bit / stereo / .wav | 全部 13 个文件均为该规格，`ffprobe` 逐文件校验 |
+| 至少导出：>30 s 基底 ×1、间断随机声 ≥3 个 | 60 s 基底 ×1；驶过 ×3、电瓶车鸣笛 ×3、汽车喇叭 ×3、雨点打伞 ×2、踩水 ×2 |
+| 格式 48 kHz / 24 bit / stereo / .wav | 全部 14 个文件均为该规格，`ffprobe` 逐文件校验 |
 | 新建 Wwise 工程（名称不用中文，配好 .gitignore） | `Wwise/SHU261_CityIntersection/`，含 `.gitignore` |
 | 基底环境声设置为持续循环 | `AMB_RainCityIntersection_Bed`：源循环开 + 无限循环 |
 | 间断声用 Random Container 随机触发 | `SFX_Rain_Random`、`SFX_Vehicles_Random`、`SFX_Horns_Random` 三个容器（Play Type = Random，Play Mode = Step） |
@@ -78,7 +78,7 @@ Positioning：`3D Position = Emitter`，`EnableAttenuation = true`，引用 Shar
 | Low-Pass Filter（远处变闷） | 0 m / 0 % → 15 m / 20 % → 45 m / 60 % → 100 m / 100 % |
 | Spread（声像扩散） | 0 m / 0 % → 20 m / 45 % → 60 m / 90 % → 100 m / 100 % |
 
-音量曲线按对数衰减设计（每倍距离约 −6 dB），低通与扩散让远处声源同时"变闷、变宽"，比单纯调音量更像真实的空气吸收。
+音量曲线按对数衰减（每倍距离约 −6 dB），低通和扩散让远处声源同时变闷、变宽。
 
 ## 四、如何预览
 
@@ -93,17 +93,20 @@ Positioning：`3D Position = Emitter`，`EnableAttenuation = true`，引用 Shar
 
 ### 关于雨的响度
 
-基底里的雨层刻意压在事件声之下（基底 RMS −28 dBFS，事件峰值 −3.5 ~ −9 dBFS，相差 19–25 dB）。如果觉得雨还是偏大或偏小，改 `tools/gen_assets.mjs` 顶部的：
+雨层压在事件声之下：基底 RMS −28 dBFS，事件峰值 −3.5 ~ −9.4 dBFS，相差 19–25 dB。
+
+雨与城市层的比例在 `tools/build_rain_bed.mjs` 里设：
 
 ```js
-const RAIN_GAIN_DB = 0;   // 雨大改 -3，雨不够改 +2
+const gRain = db(-27) / rainRms;    // 雨的目标电平
+const gCity = db(-29.5) / cityRms;  // 城市层的目标电平
 ```
 
-然后重跑：
+改完重跑：
 
 ```bash
-node tools/gen_assets.mjs          # 生成城市层与车辆驶过（合成部分）
-node tools/update_wwise_rain.mjs   # 需要 WwiseConsole waapi-server 在跑
+node tools/build_rain_bed.mjs      # 重新生成基底
+node tools/refresh_assets.mjs      # 同步进 Wwise（需 WwiseConsole waapi-server 在跑）
 ```
 
 ## 五、素材是怎么来的（重要声明）
